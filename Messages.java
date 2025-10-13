@@ -11,7 +11,11 @@ public class Messages {
     private String messageHash;
     private int totalMessagesSent = 0;
     private int totalMessagesStored = 0;
+ 
 
+    // Generated with assistance from Microsoft Copilot on 2025-10-11
+    //The purpose of the method is to validate user credentials during registration.
+    // Reference: Copilot. (2025, October 11). Java credential validation code [AI-generated code].
     // Generate random 10-digit Message ID
     public void createMessageID() {
         StringBuilder sb = new StringBuilder();
@@ -38,6 +42,10 @@ public class Messages {
         return message != null && message.length() <= 250;
     }
 
+
+    // Generated with assistance from Microsoft Copilot on 2025-10-11
+    //The purpose of the method is to validate user credentials during registration.
+    // Reference: Copilot. (2025, October 11). Java credential validation code [AI-generated code].
     public String createMessageHash() {
         if (message == null || message.trim().isEmpty()) {
             messageHash = "INVALID:EMPTYMESSAGE";
@@ -68,6 +76,7 @@ public class Messages {
         }
     }
 
+    
     public String printMessages() {
         return "\nMessage ID: " + messageID +
                "\t Message Hash: " + messageHash +
@@ -83,6 +92,10 @@ public class Messages {
         return totalMessagesStored;
     }
 
+
+    //generated with assistance from Chatgpt on 2025-10-11
+    //The purpose of the method is to store the message in a JSON format.
+    // Reference: Chatgpt. (2025, October 11). Java JSON storage code [AI-generated code].
     // Store message in JSON format
     public void storeMessage() {
         String jsonMessage = "{\n" +
@@ -101,6 +114,7 @@ public class Messages {
         }
     }
 
+    // Show message details in a dialog
     public void showMessageDetails() {
         String details = "Message Details:\n"
                 + "------------------------\n"

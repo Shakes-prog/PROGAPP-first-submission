@@ -52,6 +52,10 @@ public class Main {
             return;
         }
 
+
+        //generated with assistance from Chatgpt on 2025-10-11
+        //The purpose of the method is to store the message in a JSON format. and use JoptionPane for interaction.
+        // Reference: Chatgpt. (2025, October 11). Java JSON storage code [AI-generated code].
         // ===== MAIN MENU =====
         boolean running = true;
         while (running) {
