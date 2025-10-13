@@ -1,6 +1,7 @@
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
 
 public class LoginTest {
 @Test
@@ -57,8 +58,4 @@ void testLoginFailure() {
     assertFalse(user.LoginUser("wrong_user", "wrong_pass"), "Login should fail with incorrect credentials.");
 }
 }
-
-
-
-    
 

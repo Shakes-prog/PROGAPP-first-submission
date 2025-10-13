@@ -1,67 +1,148 @@
-import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 public class Main {
 
     public static void main(String[] args) {
-
         String userNameAttempt;
         String passwordAttempt;
         String registrationStatus;
-        
-        Scanner scanner = new Scanner(System.in);
+        String response = "";
+        int numMessagesSent = 0;
+        int maxMessages;
+        String recipient;
 
-        // User Registration
-        // prompting the user for input
-        System.out.println("*****REGISTER*****");
+        // ===== USER REGISTRATION =====
+        JOptionPane.showMessageDialog(null, "***** REGISTER *****", "QuickChat", JOptionPane.INFORMATION_MESSAGE);
 
-        System.out.print("Enter your first name: ");
-        String firstName = scanner.nextLine();
-
-        System.out.print("Enter your last name: ");
-        String lastName = scanner.nextLine();
-
-        System.out.print("Enter your username with no more than 5 characters containing an _ : ");
-        String Name = scanner.nextLine();
-
-        System.out.print(
-                "Enter your password. it needs to contain at least 8 characters, a capital letter, a number and a special character: ");
-        String userPassword = scanner.nextLine();
-
-        System.out.print("Enter your South African phone number (in the format +27): ");
-        String cellNumber = scanner.nextLine();
+        String firstName = JOptionPane.showInputDialog("Enter your first name:");
+        String lastName = JOptionPane.showInputDialog("Enter your last name:");
+        String Name = JOptionPane.showInputDialog("Enter your username (max 5 characters, must contain _ ):");
+        String userPassword = JOptionPane.showInputDialog("Enter your password (8+ chars, capital, number, special char):");
+        String cellNumber = JOptionPane.showInputDialog("Enter your South African phone number (in the format +27):");
 
         // Register the user
-        //generated with assistance from Microsoft Copilot on 2025-09-18
-        //The purppose of the method is to validate user credentials during registration.
-        // Reference: Copilot. (2025, September 18). Java credential validation code
         registrationStatus = Login.registerUser(Name, userPassword, cellNumber);
-        System.out.println(registrationStatus);
+        JOptionPane.showMessageDialog(null, registrationStatus);
+
         if (!registrationStatus.equals("Account registered successfully.")) {
-            // System.out.println(registrationMessage);
             return; // Exit if registration fails
         }
- 
-        // Create a Login object for the registered user
+
+        // Create a Login object
         Login user1 = new Login(Name, userPassword, cellNumber);
 
-        // Attempt to log in the user
-        System.out.println("*****LOGIN*****");
+        // ===== LOGIN =====
+        JOptionPane.showMessageDialog(null, "***** LOGIN *****", "QuickChat", JOptionPane.INFORMATION_MESSAGE);
 
-        System.out.println("Please enter your Username");
-        userNameAttempt = scanner.nextLine();
+        userNameAttempt = JOptionPane.showInputDialog("Enter your username:");
+        passwordAttempt = JOptionPane.showInputDialog("Enter your password:");
 
-        System.out.println("Please enter your Password");
-        passwordAttempt = scanner.nextLine();
+        Messages Message1 = null;
 
-        // Check login status
-        if (user1.LoginUser(userNameAttempt, passwordAttempt) == user1.LoginUser(Name, userPassword)) {
+        boolean loginSuccess = user1.LoginUser(userNameAttempt, passwordAttempt);
+        if (loginSuccess) {
             user1.returnLoginStatus(userNameAttempt, passwordAttempt);
-            System.out.println("Login successful. Welcome back " + firstName + " " + lastName + "!");
+            JOptionPane.showMessageDialog(null, "Login successful. Welcome back " + firstName + " " + lastName + "!\nWelcome to QuickChat.");
+            Message1 = new Messages();
+
+            // Ask for number of messages
+            maxMessages = Integer.parseInt(JOptionPane.showInputDialog("How many messages would you like to send?"));
+        } else {
+            JOptionPane.showMessageDialog(null, "Login failed. Exiting program.");
+            return;
         }
 
-       
-        
+        // ===== MAIN MENU =====
+        boolean running = true;
+        while (running) {
+            String menu = """
+                    ===== QuickChat Menu =====
+                    1) Send Messages
+                    2) Show Recently Sent Messages
+                    3) Quit
+                    """;
 
+            int choice = Integer.parseInt(JOptionPane.showInputDialog(menu + "\nEnter your choice (1-3):"));
+
+            switch (choice) {
+                case 1:
+                    while (numMessagesSent < maxMessages) {
+                        Message1.createMessageID();
+
+                        recipient = JOptionPane.showInputDialog("Enter recipient cellphone number (+27xxxxxxxxx):");
+
+                        if (!Message1.checkRecipientCell(recipient)) {
+                            JOptionPane.showMessageDialog(null, "Invalid number format. Try again.");
+                            continue;
+                        }
+                        Message1.setRecipient(recipient);
+
+                        String messageContent = JOptionPane.showInputDialog("Enter message (max 250 characters):");
+
+                        if (!Message1.checkMessageLength(messageContent)) {
+                            JOptionPane.showMessageDialog(null, " Message too long. Try again.");
+                            continue;
+                        }
+                        Message1.setMessage(messageContent);
+                        Message1.createMessageHash();
+
+                        String[] options = {"Send", "Store", "Disregard"};
+                        int sendChoice = JOptionPane.showOptionDialog(
+                                null,
+                                "Choose an action for this message:",
+                                "Send or Store Message",
+                                JOptionPane.DEFAULT_OPTION,
+                                JOptionPane.INFORMATION_MESSAGE,
+                                null,
+                                options,
+                                options[0]
+                        );
+
+                        response = Message1.sendMessage(sendChoice + 1); // +1 because buttons start at index 0
+                        JOptionPane.showMessageDialog(null, response);
+
+                        if (response.equals("Message sent.") || response.equals("Message stored.")) {
+                            numMessagesSent++;
+
+                            String messageDetails =
+                                    "Message Details:\n\n" +
+                                    "Message ID: " + Message1.getMessageID() + "\n" +
+                                    "Message Hash: " + Message1.getMessageHash() + "\n" +
+                                    "Recipient: " + Message1.getRecipient() + "\n" +
+                                    "Message: " + Message1.getMessage();
+
+                            JOptionPane.showMessageDialog(null, messageDetails, "Message Summary", JOptionPane.INFORMATION_MESSAGE);
+
+                            JOptionPane.showMessageDialog(
+                                    null,
+                                    "Message " + numMessagesSent + " of " + maxMessages + " processed.\n\n" +
+                                            Message1.printMessages() + "\n" +
+                                            "Total messages sent: " + Message1.returnTotalMessages() + "\n" +
+                                            "Total messages stored: " + Message1.returnTotalStoredMessages(),
+                                    "Message Stats",
+                                    JOptionPane.INFORMATION_MESSAGE
+                            );
+                        }
+
+                        if (numMessagesSent >= maxMessages) {
+                            JOptionPane.showMessageDialog(null, " You have reached your message limit (" + maxMessages + ").");
+                            break;
+                        }
+                    }
+                    break;
+
+                case 2:
+                    JOptionPane.showMessageDialog(null, "Coming Soon.");
+                    break;
+
+                case 3:
+                    JOptionPane.showMessageDialog(null, "Goodbye!");
+                    running = false;
+                    break;
+
+                default:
+                    JOptionPane.showMessageDialog(null, "Invalid option. Try again.");
+            }
+        }
     }
-
 }
